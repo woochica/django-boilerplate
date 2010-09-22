@@ -5,11 +5,9 @@ from fabric.contrib import files, console
 from fabric import utils
 
 
-env.home = '/usr/local/www/webroot/DOMAIN/'
-env.project = 'PROJECT'
-
-
-def _setup_path():
+def _setup_common():
+    env.home = '/usr/local/www/webroot/DOMAIN/'
+    env.project = 'PROJECT'
     env.root = os.path.join(env.home, env.environment)
     env.project_dir = os.path.join(env.root, env.project)
     env.virtualenv_root = os.path.join(env.root, 'virtualenv')
@@ -24,7 +22,7 @@ def staging():
     env.environment = 'staging'
     env.hosts = ['DOMAIN:SERVER_PORT']
     env.shell = '/usr/local/bin/bash -l -c'
-    _setup_path()
+    _setup_common()
 
 
 def production():
