@@ -99,7 +99,6 @@ def deploy():
     local('git push %s %s' % (env.environment, env.environment,))
     with cd(env.project_dir):
         run('git pull origin %s' % env.environment)
-    touch()
 
 
 def update_requirements():
@@ -116,7 +115,7 @@ def update_requirements():
         run(' '.join(cmd))
 
 
-def touch():
+def restart():
     """
     Touch WSGI file to trigger application server reload.
     """
