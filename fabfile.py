@@ -148,3 +148,22 @@ def apache_restart():
     require('root', provided_by=('staging', 'production'))
     run('sudo /usr/local/etc/rc.d/apache22 restart')
 
+
+def migrate():
+    """
+    Execute pending data- and schemamigrations.
+    """
+    require('site_dir', provided_by=('staging', 'production'))
+    project_dir = os.path.join(env.site_dir, env.project)
+    with cd(project_dir):
+        virtualenv('python manage.py migrate')
+
+
+def virtualenv(cmd):
+    """
+    Helper function.
+    Runs a command using the virtualenv environment
+    """
+    require('virtualenv_root', provided_by=('staging', 'production'))
+    return run('source %s/bin/activate; %s' % (env.virtualenv_root, cmd))
+
