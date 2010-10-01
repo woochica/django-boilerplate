@@ -12,7 +12,7 @@ def _setup_common():
     env.root = os.path.join(env.home, env.environment)
     env.site_dir = os.path.join(env.root, env.site)
     env.virtualenv_root = os.path.join(env.root, 'virtualenv')
-    env.settings = '%(site)s.settings' % env
+    env.settings = '%(project)s.settings' % env
 
 
 def staging():
