@@ -7,7 +7,7 @@ from fabric import utils
 
 def _setup_common():
     env.home = '/usr/local/www/webroot/DOMAIN/'
-    env.project = 'PROJECT'
+    env.project = 'site'
     env.root = os.path.join(env.home, env.environment)
     env.project_dir = os.path.join(env.root, env.project)
     env.virtualenv_root = os.path.join(env.root, 'virtualenv')
@@ -48,10 +48,11 @@ def create_directory_structure():
     """
     Create directory structure as follow:
 
-    /project_dir
-    /project_dir/log
-    /project_dir/project_dir
-    /project_dir/project_dir.git
+    /environment/
+    /environment/log
+    /environment/site
+    /environment/site.git
+    /environment/virtualenv
     """
     require('root', provided_by=('staging', 'production'))
     git_repo = os.path.join(env.root, "%s.git" % env.project)
@@ -65,9 +66,8 @@ def init_repos():
     """
     Initialize git repositories.
 
-    Create shared repository at ``project_dir.git/`` to accept local
-    pushes. Create live repository at ``project_dir/``. Pull changes from
-    shared repository.
+    Create shared repository at site.git/ to accept local pushes. Create
+    live repository at site/. Pull changes from shared repository.
     """
     require('root', provided_by=('staging', 'production'))
     git_repo = os.path.join(env.root, "%s.git" % env.project)
