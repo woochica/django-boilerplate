@@ -7,11 +7,12 @@ from fabric import utils
 
 def _setup_common():
     env.home = '/usr/local/www/webroot/DOMAIN/'
-    env.project = 'site'
+    env.project = 'PROJECT'
+    env.site = 'site'
     env.root = os.path.join(env.home, env.environment)
-    env.project_dir = os.path.join(env.root, env.project)
+    env.site_dir = os.path.join(env.root, env.site)
     env.virtualenv_root = os.path.join(env.root, 'virtualenv')
-    env.settings = '%(project)s.settings' % env
+    env.settings = '%(site)s.settings' % env
 
 
 def staging():
@@ -55,9 +56,9 @@ def create_directory_structure():
     /environment/virtualenv
     """
     require('root', provided_by=('staging', 'production'))
-    git_repo = os.path.join(env.root, "%s.git" % env.project)
+    git_repo = os.path.join(env.root, "%s.git" % env.site)
     run('mkdir -p %(root)s' % env)
-    run('mkdir -p %(project_dir)s' % env)
+    run('mkdir -p %(site_dir)s' % env)
     run('mkdir -p %s' % os.path.join(env.root, 'log'))
     run('mkdir -p %s' % git_repo)
 
@@ -70,10 +71,10 @@ def init_repos():
     live repository at site/. Pull changes from shared repository.
     """
     require('root', provided_by=('staging', 'production'))
-    git_repo = os.path.join(env.root, "%s.git" % env.project)
+    git_repo = os.path.join(env.root, "%s.git" % env.site)
     with cd(git_repo):
         run('git --bare init')
-    with cd(env.project_dir):
+    with cd(env.site_dir):
         run('git init')
         run('git remote add origin %s' % git_repo)
 
@@ -91,13 +92,13 @@ def deploy():
     """
     Push repository.
     """
-    require('project_dir', provided_by=('staging', 'production'))
+    require('site_dir', provided_by=('staging', 'production'))
     if env.environment == 'production':
         if not console.confirm('Are you sure you want to deploy production?',
                                default=False):
             utils.abort('Production deployment aborted.')
     local('git push %s %s' % (env.environment, env.environment,))
-    with cd(env.project_dir):
+    with cd(env.site_dir):
         run('git pull origin %s' % env.environment)
 
 
@@ -105,12 +106,11 @@ def update_requirements():
     """
     Update external package dependencies.
     """
-    require('project_dir', provided_by=('staging', 'production'))
-    requirements = env.project_dir
-    with cd(requirements):
+    require('site_dir', provided_by=('staging', 'production'))
+    with cd(env.site_dir):
         cmd = ['pip install']
         cmd += ['-E %(virtualenv_root)s' % env]
-        cmd += ['--requirement %s' % os.path.join(requirements,
+        cmd += ['--requirement %s' % os.path.join(env.site_dir,
                                                   'requirements.txt')]
         run(' '.join(cmd))
 
@@ -119,10 +119,10 @@ def restart():
     """
     Touch WSGI file to trigger application server reload.
     """
-    require('project_dir', provided_by=('staging', 'production'))
-    apache_dir = os.path.join(env.project_dir, 'apache')
+    require('site_dir', provided_by=('staging', 'production'))
+    apache_dir = os.path.join(env.site_dir, 'apache')
     with cd(apache_dir):
-        run('touch %s-%s.wsgi' % (env.project, env.environment,))
+        run('touch %s-%s.wsgi' % (env.site, env.environment,))
 
 
 def configtest():
