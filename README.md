@@ -1,1 +1,1 @@
-= Boilerplate for initializing a new Django project =
+* Boilerplate for initializing a new Django project
