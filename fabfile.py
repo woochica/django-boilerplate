@@ -106,13 +106,11 @@ def update_requirements():
     """
     Update external package dependencies.
     """
-    require('site_dir', provided_by=('staging', 'production'))
-    with cd(env.site_dir):
-        cmd = ['pip install']
-        cmd += ['-E %(virtualenv_root)s' % env]
-        cmd += ['--requirement %s' % os.path.join(env.site_dir,
-                                                  'requirements.txt')]
-        run(' '.join(cmd))
+    require('project_dir', provided_by=('staging', 'production'))
+    cmd = ['%s install' % os.path.join(env.virtualenv_root, 'bin', 'pip')]
+    cmd += ['-E %(virtualenv_root)s' % env]
+    cmd += ['-r %s' % os.path.join(env.project_dir, 'requirements.txt')]
+    run(' '.join(cmd))
 
 
 def restart():
