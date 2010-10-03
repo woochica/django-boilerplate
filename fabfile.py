@@ -154,10 +154,10 @@ def migrate():
     require('site_dir', provided_by=('staging', 'production'))
     project_dir = os.path.join(env.site_dir, env.project)
     with cd(project_dir):
-        virtualenv('python manage.py migrate')
+        _virtualenv('python manage.py migrate')
 
 
-def virtualenv(cmd):
+def _virtualenv(cmd):
     """
     Helper function.
     Runs a command using the virtualenv environment
